@@ -1,8 +1,6 @@
 package com.igalia.wordcount;
 
-import java.io.IOException;
-import java.util.StringTokenizer;
-
+import com.google.gson.Gson;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -15,8 +13,14 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.StringTokenizer;
 
 public class WordCount {
+    private static final Logger logger = LoggerFactory.getLogger(WordCount.class);
 
 	public static class TokenizerMapper
 			extends Mapper<Object, Text, Text, IntWritable>{
@@ -26,6 +30,7 @@ public class WordCount {
 
 		public void map(Object key, Text value, Context context
 		) throws IOException, InterruptedException {
+            logger.error("map key {} value {} context {}", key, value, context);
 			StringTokenizer itr = new StringTokenizer(value.toString());
 			while (itr.hasMoreTokens()) {
 				word.set(itr.nextToken());
@@ -41,6 +46,8 @@ public class WordCount {
 		public void reduce(Text key, Iterable<IntWritable> values,
 						   Context context
 		) throws IOException, InterruptedException {
+			logger.error("reduce key {} value {} context {}", key, values, context);
+
 			int sum = 0;
 			for (IntWritable val : values) {
 				sum += val.get();
