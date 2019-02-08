@@ -30,7 +30,7 @@ public class WordCount {
 
 		public void map(Object key, Text value, Context context
 		) throws IOException, InterruptedException {
-            logger.error("map key {} value {} context {}", key, value, context);
+            logger.error("map key {} value {} context {}", key, value, new Gson().toJson(context));
 			StringTokenizer itr = new StringTokenizer(value.toString());
 			while (itr.hasMoreTokens()) {
 				word.set(itr.nextToken());
@@ -46,7 +46,7 @@ public class WordCount {
 		public void reduce(Text key, Iterable<IntWritable> values,
 						   Context context
 		) throws IOException, InterruptedException {
-			logger.error("reduce key {} value {} context {}", key, values, context);
+			logger.error("reduce key {} value {} context {}", key, new Gson().toJson(values),  new Gson().toJson(context));
 
 			int sum = 0;
 			for (IntWritable val : values) {
@@ -69,7 +69,7 @@ public class WordCount {
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
-//		TEST CODE check read file
+//		TEST code check read file
 		FileSystem fs = FileSystem.get(conf);
 		FSDataInputStream inputStream = fs.open(new Path("input/file01"));
 		String out = IOUtils.toString(inputStream,"UTF8");
